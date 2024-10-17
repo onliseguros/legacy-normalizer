@@ -1,7 +1,7 @@
 import xlsx from 'xlsx';
 
 // Replace with your file name
-const fileName = 'berkley-legado'
+const fileName = 'AGRUPADO SUBIDA ONLI'
 
 const file = `spreadsheets/${fileName}.xlsx`;
 const newFile = `spreadsheets/${fileName}-is-normalizada.xlsx`;
@@ -12,7 +12,8 @@ function normalizeInsuredAmount() {
   const worksheet = workbook.Sheets[sheetName];
   const data = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
 
-  const normalizedData = data
+  // remove pointers
+  const normalizedData = JSON.parse(JSON.stringify(data))
 
   if (data.length < 1) {
     console.log('Not data found.')
@@ -30,27 +31,6 @@ function normalizeInsuredAmount() {
     }
 
     console.log('row:', index + 1)
-
-    const lifetimeStart = row[5]
-    const lifetimeEnd = row[6]
-    const date = row[21]
-
-    // it is necessary to convert excel date to JS date
-    if (typeof lifetimeStart === 'number') {
-      normalizedData[index][5] = convertDateFromExcelToJS(lifetimeStart)
-    } else {
-      console.log('Lifetime start is not a number')
-    }
-    if (typeof lifetimeEnd === 'number') {
-      normalizedData[index][6] = convertDateFromExcelToJS(lifetimeEnd)
-    } else {
-      console.log('Lifetime end is not a number')
-    }
-    if (typeof date === 'number') {
-      normalizedData[index][21] = convertDateFromExcelToJS(date)
-    } else {
-      console.log('Date is not a number')
-    }
 
     const emissionType = row[16].trim().toLowerCase() // Q
     const externalKey = row[17]  // R
@@ -159,6 +139,39 @@ function normalizeInsuredAmount() {
 
     normalizedData[index][2] = insuredAmount
   });
+
+  // convert excel dates to JS dates
+  normalizedData.forEach((row, index) => {
+    // ignore table headers
+    if (index === 0) {
+      return
+    }
+    // ignore empty row
+    if (row.length < 1) {
+      return
+    }
+
+    const lifetimeStart = row[5]
+    const lifetimeEnd = row[6]
+    const date = row[21]
+
+    // it is necessary to convert excel date to JS date
+    if (typeof lifetimeStart === 'number') {
+      normalizedData[index][5] = convertDateFromExcelToJS(lifetimeStart)
+    } else {
+      console.log('Lifetime start is not a number')
+    }
+    if (typeof lifetimeEnd === 'number') {
+      normalizedData[index][6] = convertDateFromExcelToJS(lifetimeEnd)
+    } else {
+      console.log('Lifetime end is not a number')
+    }
+    if (typeof date === 'number') {
+      normalizedData[index][21] = convertDateFromExcelToJS(date)
+    } else {
+      console.log('Date is not a number')
+    }
+  })
 
   // create a new .xlsx file
   const newWorkbook = xlsx.utils.book_new()
