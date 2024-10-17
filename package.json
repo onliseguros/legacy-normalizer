@@ -1,0 +1,15 @@
+{
+  "name": "legacy-normalizer",
+  "version": "1.0.0",
+  "description": "scripts to normalize legacy spreadsheets to the ONLi format",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "insured-amount": "node src/insured-amount.js"
+  },
+  "author": "Lerry Klitzke",
+  "license": "ISC",
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}
